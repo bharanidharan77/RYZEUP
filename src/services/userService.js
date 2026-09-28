@@ -3,6 +3,8 @@
  * Prepares user architecture for future Firebase Authentication integration.
  */
 
+import { syncUserProfileToAppwrite } from './appwriteSyncService';
+
 const STORAGE_USERS_KEY = 'ryzeup_users_v2';
 const STORAGE_CURRENT_USER_KEY = 'ryzeup_current_user_v2';
 
@@ -198,6 +200,7 @@ export function loginUser(usernameInput, passwordInput, targetRole = 'user') {
   }
 
   localStorage.setItem(STORAGE_CURRENT_USER_KEY, JSON.stringify(matchedUser));
+  syncUserProfileToAppwrite(matchedUser);
   return { success: true, user: matchedUser };
 }
 
@@ -222,6 +225,7 @@ export function saveOnboardingInfo(userId, personalInfo, bodyMeasurements) {
     if (currentUser.id === userId) {
       localStorage.setItem(STORAGE_CURRENT_USER_KEY, JSON.stringify(users[index]));
     }
+    syncUserProfileToAppwrite(users[index]);
   }
 }
 
@@ -243,6 +247,7 @@ export function selectFitnessPlan(userId, planKey) {
     if (currentUser.id === userId) {
       localStorage.setItem(STORAGE_CURRENT_USER_KEY, JSON.stringify(updatedUser));
     }
+    syncUserProfileToAppwrite(updatedUser);
     return updatedUser;
   }
   return null;
@@ -264,8 +269,10 @@ export function updateActivePlan(userId, newPlanKey) {
     if (currentUser.id === userId) {
       localStorage.setItem(STORAGE_CURRENT_USER_KEY, JSON.stringify(updatedUser));
     }
+    syncUserProfileToAppwrite(updatedUser);
     return updatedUser;
   }
+
   return null;
 }
 

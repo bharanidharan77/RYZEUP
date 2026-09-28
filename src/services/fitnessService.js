@@ -4,6 +4,7 @@
  */
 
 import { fitnessPlansData } from '../data/fitnessPlansData';
+import { syncDailyProgressToAppwrite } from './appwriteSyncService';
 
 const TRACKING_PREFIX = 'ryzeup_track_';
 const OVERRIDES_PREFIX = 'ryzeup_plan_override_';
@@ -263,6 +264,7 @@ export function saveDietChecklist(userId, dietState, dateStr = getTodayDateStrin
     diet: { ...current.diet, ...dietState }
   };
   localStorage.setItem(`${TRACKING_PREFIX}${userId}_${dateStr}`, JSON.stringify(updated));
+  syncDailyProgressToAppwrite(userId, dateStr, updated);
   return updated;
 }
 
@@ -276,6 +278,7 @@ export function saveCardioSession(userId, minutes, completed = true, dateStr = g
     cardio: { minutes: parseInt(minutes) || 0, completed, targetMinutes: current.cardio?.targetMinutes || 45 }
   };
   localStorage.setItem(`${TRACKING_PREFIX}${userId}_${dateStr}`, JSON.stringify(updated));
+  syncDailyProgressToAppwrite(userId, dateStr, updated);
   return updated;
 }
 
@@ -289,6 +292,7 @@ export function saveWorkoutPerformance(userId, exerciseLogs, completed = true, d
     workout: { completed, exerciseLogs: { ...current.workout.exerciseLogs, ...exerciseLogs } }
   };
   localStorage.setItem(`${TRACKING_PREFIX}${userId}_${dateStr}`, JSON.stringify(updated));
+  syncDailyProgressToAppwrite(userId, dateStr, updated);
   return updated;
 }
 
@@ -310,8 +314,10 @@ export function saveDailyProgressRecord(userId, dateStr = getTodayDateString(), 
   };
 
   localStorage.setItem(storageKey, JSON.stringify(updatedRecord));
+  syncDailyProgressToAppwrite(userId, dateStr, updatedRecord);
   return updatedRecord;
 }
+
 
 /**
  * Admin: Saves customized multi-day workout program for a specific user
